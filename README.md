@@ -29,7 +29,7 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/holysword/holysword.git
+git clone https://github.com/ziyueyijun/holysword.git
 
 # 进入目录
 cd holysword
