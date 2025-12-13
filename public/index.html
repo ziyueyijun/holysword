@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HolySword Framework - 轻量级PHP全栈框架</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #f59e0b;
+            --light-color: #f8fafc;
+            --dark-color: #0f172a;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --gray-color: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f1f5f9;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+        }
+        
+        .logo-text h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .logo-text p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        nav a:hover {
+            opacity: 0.8;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--gray-color);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            margin-left: 1rem;
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .features {
+            padding: 4rem 0;
+            background-color: var(--light-color);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2rem;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+        }
+        
+        .section-title p {
+            color: var(--gray-color);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+        
+        .feature-card p {
+            color: var(--gray-color);
+        }
+        
+        .demo {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+        }
+        
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .api-tester {
+            background: var(--light-color);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .response {
+            background: #0f172a;
+            color: #f8fafc;
+            border-radius: 10px;
+            padding: 1.5rem;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .footer-logo {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .copyright {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">🗡️</div>
+                    <div class="logo-text">
+                        <h1>HolySword Framework</h1>
+                        <p>轻量级PHP全栈框架</p>
+                    </div>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#features">特性</a></li>
+                        <li><a href="#demo">功能测试</a></li>
+                        <li><a href="#docs">文档</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h2>现代化的PHP开发体验</h2>
+            <p>HolySword是一个基于PHP 8.1原生开发的轻量级全栈框架，提供依赖注入、路由系统、HTTP抽象等强大功能，帮助开发者快速构建Web应用程序。</p>
+            <div>
+                <a href="#demo" class="btn">立即测试</a>
+                <a href="#docs" class="btn btn-outline">查看文档</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>核心特性</h2>
+                <p>HolySword框架提供了构建现代Web应用所需的所有核心功能</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>原生PHP 8.1</h3>
+                    <p>充分利用PHP 8.1的新特性，包括联合类型、只读属性等，提供更安全、更高效的开发体验。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>依赖注入容器</h3>
+                    <p>强大的IoC容器支持自动依赖解析，简化服务管理和对象创建过程。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>灵活路由系统</h3>
+                    <p>支持参数路由、路由分组、中间件等功能，轻松定义RESTful API和Web路由。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📡</div>
+                    <h3>HTTP抽象层</h3>
+                    <p>完整的请求/响应封装，提供统一的HTTP操作接口，简化数据处理流程。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚙️</div>
+                    <h3>配置管理系统</h3>
+                    <p>简洁的配置加载和访问机制，支持环境变量和多环境配置。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>中间件支持</h3>
+                    <p>灵活的中间件机制，轻松实现认证、日志、CORS等横切关注点。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="demo" class="demo">
+        <div class="container">
+            <div class="section-title">
+                <h2>功能测试中心</h2>
+                <p>在这里测试HolySword框架的各项功能</p>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="request-info">请求信息</div>
+                <div class="tab" data-tab="query-params">查询参数</div>
+                <div class="tab" data-tab="post-data">POST数据</div>
+                <div class="tab" data-tab="json-data">JSON数据</div>
+                <div class="tab" data-tab="headers">请求头</div>
+                <div class="tab" data-tab="route-params">路由参数</div>
+            </div>
+            
+            <div class="tab-content active" id="request-info-tab">
+                <div class="api-tester">
+                    <h3>获取请求基本信息</h3>
+                    <p>测试端点: <code>GET /api/demo/request-info</code></p>
+                    <button class="btn" onclick="testApi('/api/demo/request-info', 'GET')">发送请求</button>
+                </div>
+                <h4>响应结果:</h4>
+                <div id="request-info-response" class="response">点击上方按钮发送请求查看响应</div>
+            </div>
+            
+            <div class="tab-content" id="query-params-tab">
+                <div class="api-tester">
+                    <h3>查询参数测试</h3>
+                    <p>测试端点: <code>GET /api/demo/query</code></p>
+                    <div class="form-group">
+                        <label for="query-name">姓名:</label>
+                        <input type="text" id="query-name" class="form-control" placeholder="例如: John" value="John">
+                    </div>
+                    <div class="form-group">
+                        <label for="query-age">年龄:</label>
+                        <input type="number" id="query-age" class="form-control" placeholder="例如: 25" value="25">
+                    </div>
+                    <button class="btn" onclick="testQueryParams()">发送请求</button>
+                </div>
+                <h4>响应结果:</h4>
+                <div id="query-params-response" class="response">点击上方按钮发送请求查看响应</div>
+            </div>
+            
+            <div class="tab-content" id="post-data-tab">
+                <div class="api-tester">
+                    <h3>POST表单数据测试</h3>
+                    <p>测试端点: <code>POST /api/demo/post</code></p>
+                    <div class="form-group">
+                        <label for="post-name">姓名:</label>
+                        <input type="text" id="post-name" class="form-control" placeholder="例如: John" value="John">
+                    </div>
+                    <div class="form-group">
+                        <label for="post-email">邮箱:</label>
+                        <input type="email" id="post-email" class="form-control" placeholder="例如: john@example.com" value="john@example.com">
+                    </div>
+                    <button class="btn" onclick="testPostData()">发送请求</button>
+                </div>
+                <h4>响应结果:</h4>
+                <div id="post-data-response" class="response">点击上方按钮发送请求查看响应</div>
+            </div>
+            
+            <div class="tab-content" id="json-data-tab">
+                <div class="api-tester">
+                    <h3>JSON数据测试</h3>
+                    <p>测试端点: <code>POST /api/demo/json</code></p>
+                    <div class="form-group">
+                        <label for="json-input">JSON数据:</label>
+                        <textarea id="json-input" class="form-control" rows="5">{
+  "name": "John",
+  "age": 25,
+  "city": "Beijing"
+}</textarea>
+                    </div>
+                    <button class="btn" onclick="testJsonData()">发送请求</button>
+                </div>
+                <h4>响应结果:</h4>
+                <div id="json-data-response" class="response">点击上方按钮发送请求查看响应</div>
+            </div>
+            
+            <div class="tab-content" id="headers-tab">
+                <div class="api-tester">
+                    <h3>请求头测试</h3>
+                    <p>测试端点: <code>GET /api/demo/headers</code></p>
+                    <div class="form-group">
+                        <label for="custom-header">自定义请求头 (X-Custom-Header):</label>
+                        <input type="text" id="custom-header" class="form-control" placeholder="例如: MyValue" value="MyValue">
+                    </div>
+                    <button class="btn" onclick="testHeaders()">发送请求</button>
+                </div>
+                <h4>响应结果:</h4>
+                <div id="headers-response" class="response">点击上方按钮发送请求查看响应</div>
+            </div>
+            
+            <div class="tab-content" id="route-params-tab">
+                <div class="api-tester">
+                    <h3>路由参数测试</h3>
+                    <p>测试端点: <code>GET /api/demo/users/{id}</code></p>
+                    <div class="form-group">
+                        <label for="user-id">用户ID:</label>
+                        <input type="number" id="user-id" class="form-control" placeholder="例如: 123" value="123">
+                    </div>
+                    <button class="btn" onclick="testRouteParams()">发送请求</button>
+                </div>
+                <h4>响应结果:</h4>
+                <div id="route-params-response" class="response">点击上方按钮发送请求查看响应</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="docs" class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>文档与资源</h2>
+                <p>深入了解HolySword框架的使用方法</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>入门指南</h3>
+                    <p>从安装到基本配置，快速上手HolySword框架。</p>
+                    <a href="README.md" class="btn btn-outline" style="margin-top: 1rem;">查看文档</a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧩</div>
+                    <h3>API参考</h3>
+                    <p>详细的API文档，涵盖所有类和方法的使用说明。</p>
+                    <a href="#" class="btn btn-outline" style="margin-top: 1rem;">查看API</a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>社区支持</h3>
+                    <p>加入社区讨论，获取帮助和分享经验。</p>
+                    <a href="#" class="btn btn-outline" style="margin-top: 1rem;">加入讨论</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">🗡️ HolySword</div>
+                <div class="footer-links">
+                    <a href="#">首页</a>
+                    <a href="#features">特性</a>
+                    <a href="#demo">功能测试</a>
+                    <a href="#docs">文档</a>
+                    <a href="#">GitHub</a>
+                </div>
+                <div class="copyright">
+                    &copy; 2025 HolySword Team. 基于MIT许可证发布。
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab切换功能
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 移除所有active类
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // 添加active类到当前tab
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        
+        // API测试函数
+        async function testApi(endpoint, method = 'GET', data = null, headers = {}) {
+            const responseElement = document.querySelector(`#${endpoint.replace(/\//g, '-').replace(/[^a-zA-Z0-9-]/g, '')}-response`) || 
+                                  document.querySelector(`#${endpoint.split('/')[3]}-response`);
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...headers
+                    }
+                };
+                
+                if (data) {
+                    if (method === 'GET') {
+                        const queryParams = new URLSearchParams(data).toString();
+                        endpoint += `?${queryParams}`;
+                    } else {
+                        options.body = JSON.stringify(data);
+                    }
+                }
+                
+                responseElement.textContent = '正在发送请求...';
+                
+                const response = await fetch(endpoint, options);
+                const result = await response.text();
+                
+                try {
+                    const jsonData = JSON.parse(result);
+                    responseElement.textContent = JSON.stringify(jsonData, null, 2);
+                } catch {
+                    responseElement.textContent = result;
+                }
+            } catch (error) {
+                responseElement.textContent = `请求失败: ${error.message}`;
+            }
+        }
+        
+        // 测试查询参数
+        function testQueryParams() {
+            const name = document.getElementById('query-name').value;
+            const age = document.getElementById('query-age').value;
+            
+            testApi('/api/demo/query', 'GET', { name, age });
+        }
+        
+        // 测试POST数据
+        function testPostData() {
+            const name = document.getElementById('post-name').value;
+            const email = document.getElementById('post-email').value;
+            
+            testApi('/api/demo/post', 'POST', { name, email });
+        }
+        
+        // 测试JSON数据
+        function testJsonData() {
+            try {
+                const jsonData = JSON.parse(document.getElementById('json-input').value);
+                testApi('/api/demo/json', 'POST', jsonData);
+            } catch (error) {
+                document.getElementById('json-data-response').textContent = `JSON格式错误: ${error.message}`;
+            }
+        }
+        
+        // 测试请求头
+        function testHeaders() {
+            const customHeader = document.getElementById('custom-header').value;
+            testApi('/api/demo/headers', 'GET', null, { 'X-Custom-Header': customHeader });
+        }
+        
+        // 测试路由参数
+        function testRouteParams() {
+            const userId = document.getElementById('user-id').value;
+            testApi(`/api/demo/users/${userId}`, 'GET');
+        }
+        
+        // 页面加载完成后测试基础信息
+        document.addEventListener('DOMContentLoaded', () => {
+            // 可以在这里添加页面加载后的初始化代码
+        });
+    </script>
+</body>
+</html>

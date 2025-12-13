@@ -1,0 +1,35 @@
+{
+    "name": "holysword/holysword",
+    "description": "HolySword - A lightweight PHP 8.1 framework built with native PHP",
+    "type": "framework",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "HolySword Team"
+        }
+    ],
+    "require": {
+        "php": ">=8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "HolySword\\": "src/",
+            "App\\": "app/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
