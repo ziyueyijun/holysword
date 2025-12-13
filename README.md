@@ -16,6 +16,10 @@
 - **HTTP 抽象** - 完整的请求/响应封装
 - **配置管理** - 简洁的配置加载和访问
 - **MVC 架构** - 清晰的代码组织结构
+- **数据库支持** - 多连接数据库支持和查询构建器
+- **数据验证** - 强大的数据验证功能
+- **日志系统** - PSR-3 风格的日志记录
+- **中间件系统** - 灵活的中间件机制
 
 ## ⚙️ 系统要求
 
@@ -105,14 +109,20 @@ DB_PASSWORD=
 ```
 HolySword/
 ├── app/                          # 应用代码目录
-│   └── Controllers/              # 控制器
-│       ├── Controller.php        # 控制器基类
-│       └── HomeController.php    # 示例控制器
+│   ├── Controllers/              # 控制器
+│   │   ├── Controller.php        # 控制器基类
+│   │   └── HomeController.php    # 示例控制器
+│   └── Middleware/               # 中间件
+│       ├── AuthMiddleware.php    # 认证中间件
+│       ├── CorsMiddleware.php    # CORS中间件
+│       └── LogMiddleware.php     # 日志中间件
 ├── config/                       # 配置文件目录
-│   └── app.php                   # 应用配置
+│   ├── app.php                   # 应用配置
+│   └── database.php              # 数据库配置
 ├── public/                       # 公共目录（Web 根目录）
 │   ├── .htaccess                 # Apache 重写规则
-│   └── index.php                 # 应用入口文件
+│   ├── index.php                 # 应用入口文件
+│   └── index.html                # 框架官网介绍页面
 ├── routes/                       # 路由定义目录
 │   ├── web.php                   # Web 路由
 │   └── api.php                   # API 路由（自动添加 /api 前缀）
@@ -121,16 +131,26 @@ HolySword/
 │   │   └── Config.php
 │   ├── Container/                # 依赖注入容器
 │   │   └── Container.php
+│   ├── Database/                 # 数据库组件
+│   │   ├── DB.php                # 数据库操作类
+│   │   ├── DatabaseManager.php   # 数据库连接管理器
+│   │   └── QueryBuilder.php      # 查询构建器
+│   ├── Exception/                # 异常处理
+│   │   └── ExceptionHandler.php  # 异常处理器
 │   ├── Foundation/               # 应用基础
 │   │   └── Application.php
 │   ├── Http/                     # HTTP 处理
 │   │   ├── Request.php           # HTTP 请求
 │   │   └── Response.php          # HTTP 响应
-│   ├── Middleware/               # 中间件
+│   ├── Log/                      # 日志系统
+│   │   └── Logger.php            # 日志记录器
+│   ├── Middleware/               # 中间件接口
 │   │   └── MiddlewareInterface.php
 │   ├── Routing/                  # 路由系统
 │   │   ├── Router.php            # 路由器
 │   │   └── Route.php             # 路由实例
+│   ├── Validation/               # 数据验证
+│   │   └── Validator.php         # 数据验证器
 │   └── helpers.php               # 全局辅助函数
 ├── storage/                      # 存储目录
 │   ├── cache/                    # 缓存文件
@@ -139,11 +159,11 @@ HolySword/
 └── .env.example                  # 环境配置示例
 ```
 
-## 🛠️ 使用指南
+## 🛠️ 核心功能详解
 
-### 路由定义
+### 路由系统
 
-在 `routes/web.php` 中定义 Web 路由：
+在 `routes/web.php` 和 `routes/api.php` 中定义路由：
 
 ```php
 <?php
@@ -181,7 +201,7 @@ $router->any('/any', function () {
 });
 ```
 
-### 路由分组
+#### 路由分组
 
 ```php
 // 带前缀的分组
@@ -197,7 +217,7 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function ($router) {
 });
 ```
 
-### 路由中间件
+#### 路由中间件
 
 ```php
 // 为单个路由添加中间件
@@ -209,14 +229,14 @@ $router->get('/admin/settings', [AdminController::class, 'settings'])
     ->middleware(['auth', 'admin']);
 ```
 
-### 命名路由
+#### 命名路由
 
 ```php
 $router->get('/users/{id}', [UserController::class, 'show'])
     ->name('users.show');
 ```
 
-### 创建控制器
+### 控制器
 
 在 `app/Controllers/` 目录创建控制器：
 
@@ -476,6 +496,155 @@ $cache = app('cache');  // 辅助函数
 $logger = $container->make(Logger::class, ['level' => 'debug']);
 ```
 
+### 数据库支持
+
+框架支持多种数据库（MySQL、PostgreSQL、SQLite、SQL Server）和多连接配置：
+
+```php
+// 基础查询
+$users = db()->query('SELECT * FROM users WHERE status = ?', [1]);
+
+// 使用指定连接
+$data = db('mysql')->query('SELECT * FROM orders');
+$pgData = db('pgsql')->query('SELECT * FROM products');
+
+// 插入
+$id = db()->insert('users', ['name' => 'John', 'email' => 'john@example.com']);
+
+// 更新
+$affected = db()->update('users', ['name' => 'Jane'], ['id' => 1]);
+
+// 删除
+$affected = db()->delete('users', ['id' => 1]);
+```
+
+#### 查询构建器
+
+框架提供了强大的查询构建器，支持链式调用：
+
+```php
+// 基础查询
+$users = db()->table('users')->where('status', 1)->get();
+
+// LEFT JOIN
+$orders = db()->table('orders')
+    ->select('orders.*', 'users.name as user_name')
+    ->leftJoin('users', 'orders.user_id', '=', 'users.id')
+    ->where('orders.status', 'completed')
+    ->orderBy('orders.created_at', 'desc')
+    ->limit(10)
+    ->get();
+
+// 聚合函数
+$count = db()->table('users')->where('status', 1)->count();
+$total = db()->table('orders')->sum('amount');
+
+// 复杂查询示例
+$results = db()->table('orders')
+    ->select('orders.id', 'orders.amount', 'users.name', 'products.title')
+    ->leftJoin('users', 'orders.user_id', '=', 'users.id')
+    ->leftJoin('products', 'orders.product_id', '=', 'products.id')
+    ->where('orders.status', 'completed')
+    ->whereBetween('orders.amount', [100, 1000])
+    ->orderBy('orders.created_at', 'desc')
+    ->limit(10)
+    ->get();
+```
+
+#### 查询构建器功能
+
+1. **SELECT 操作**
+   - `select()` - 指定查询字段
+   - `distinct()` - 去重查询
+   - `addSelect()` - 添加更多字段
+
+2. **JOIN 操作**
+   - `join()` - INNER JOIN
+   - `leftJoin()` - LEFT JOIN
+   - `rightJoin()` - RIGHT JOIN
+   - `crossJoin()` - CROSS JOIN
+
+3. **WHERE 条件**
+   - `where()` - 基础条件
+   - `orWhere()` - OR 条件
+   - `whereIn()` - IN 条件
+   - `whereNotIn()` - NOT IN 条件
+   - `whereBetween()` - BETWEEN 条件
+   - `whereNull()` - IS NULL 条件
+   - `whereNotNull()` - IS NOT NULL 条件
+
+4. **排序和分组**
+   - `orderBy()` - 排序
+   - `groupBy()` - 分组
+   - `having()` - HAVING 条件
+
+5. **分页**
+   - `limit()` - 限制数量
+   - `offset()` - 偏移量
+   - `forPage()` - 分页查询
+
+6. **聚合函数**
+   - `count()` - 统计数量
+   - `sum()` - 求和
+   - `avg()` - 平均值
+   - `max()` - 最大值
+   - `min()` - 最小值
+
+7. **CRUD 操作**
+   - `insert()` - 插入数据
+   - `update()` - 更新数据
+   - `delete()` - 删除数据
+   - `increment()` - 自增字段
+   - `decrement()` - 自减字段
+
+### 数据验证
+
+框架提供了强大的数据验证功能：
+
+```php
+use HolySword\Validation\Validator;
+
+$validator = Validator::make($request->all(), [
+    'name' => 'required|min:2|max:50',
+    'email' => 'required|email',
+    'age' => 'numeric|min:1|max:120',
+]);
+
+if ($validator->fails()) {
+    return Response::error($validator->firstError(), 422, 422);
+}
+```
+
+支持的验证规则：
+- `required` - 必填
+- `email` - 邮箱格式
+- `numeric` - 数字
+- `integer` - 整数
+- `string` - 字符串
+- `array` - 数组
+- `min:n` - 最小值/长度
+- `max:n` - 最大值/长度
+- `between:min,max` - 范围
+- `in:a,b,c` - 枚举值
+- `url` - URL 格式
+- `ip` - IP 地址
+- `date` - 日期格式
+- `confirmed` - 确认字段
+- `boolean` - 布尔值
+
+### 日志系统
+
+框架提供了 PSR-3 风格的日志记录功能：
+
+```php
+$logger = logger();
+
+// 记录不同级别的日志
+$logger->info('用户登录成功', ['user_id' => 1]);
+$logger->error('数据库连接失败', ['host' => 'localhost']);
+$logger->debug('调试信息', ['data' => $someData]);
+```
+
 ### 中间件
 
 创建中间件：
@@ -512,7 +681,7 @@ class AuthMiddleware implements MiddlewareInterface
 ```php
 // 在 routes/web.php 或引导文件中
 $router->aliasMiddleware('auth', App\Middleware\AuthMiddleware::class);
-$router->aliasMiddleware('admin', App\Middleware\AdminMiddleware::class);
+$router->aliasMiddleware('cors', App\Middleware\CorsMiddleware::class);
 ```
 
 ### 辅助函数
@@ -543,6 +712,13 @@ $storage = storage_path('logs/app.log');
 // 获取环境变量
 $debug = env('APP_DEBUG', false);
 
+// 数据库操作
+$db = db();           // 默认连接
+$db = db('pgsql');    // PostgreSQL 连接
+
+// 日志记录
+$logger = logger();
+
 // 调试函数
 dump($variable);      // 打印变量
 dd($var1, $var2);     // 打印并终止
@@ -568,6 +744,44 @@ $router->get('/status', function () {
 // 访问路径: /api/users
 $router->get('/users', [App\Controllers\Api\UserController::class, 'index']);
 ```
+
+## 🧪 功能测试
+
+框架提供了完整的功能测试路由，在 `routes/api.php` 中定义了大量测试端点：
+
+### 请求处理测试
+- `GET /api/demo/request` - 获取请求基本信息
+- `GET /api/demo/query?name=John&age=25` - 获取 Query 参数
+- `POST /api/demo/post` - 获取 POST 数据
+- `POST /api/demo/json` - 获取 JSON 请求体
+- `GET /api/demo/headers` - 获取请求头
+
+### 路由参数测试
+- `GET /api/demo/users/{id}` - 单个路由参数
+- `GET /api/demo/posts/{postId}/comments/{commentId}` - 多个路由参数
+
+### RESTful CRUD 测试
+- `POST /api/demo/resources` - 创建资源
+- `PUT /api/demo/resources/{id}` - 更新资源
+- `DELETE /api/demo/resources/{id}` - 删除资源
+
+### 响应功能测试
+- `GET /api/demo/error?type=404` - 错误响应示例
+- `GET /api/demo/redirect?url=/api/status` - 重定向示例
+- `GET /api/demo/cookie?name=test&value=123` - 设置 Cookie
+
+### 中间件测试
+- `GET /api/demo/with-middleware` - 日志中间件示例
+
+### 数据库测试
+- `GET /api/demo/db/connections` - 查看数据库连接配置
+- `GET /api/demo/db/test` - 测试数据库连接
+- `GET /api/demo/query/examples` - 查询构建器示例
+
+### 数据验证测试
+- `POST /api/demo/validate` - 数据验证示例
+
+访问 `http://localhost/test.html` 可以在浏览器中测试这些功能。
 
 ## ❌ 错误处理
 
@@ -605,6 +819,14 @@ APP_KEY=
 
 APP_TIMEZONE=Asia/Shanghai
 APP_LOCALE=zh_CN
+
+# 数据库配置
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE=holysword
+DB_USERNAME=root
+DB_PASSWORD=
 ```
 
 ## 📄 许可证
@@ -619,3 +841,6 @@ MIT License
   - HTTP 请求/响应
   - 配置管理
   - 中间件支持
+  - 数据库支持
+  - 数据验证
+  - 日志系统
