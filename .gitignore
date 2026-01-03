@@ -1,0 +1,33 @@
+# 环境配置文件（包含敏感信息，禁止提交）
+.env
+
+# IDE 和编辑器
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# PHP 依赖（可通过 composer install 重新安装）
+/vendor/
+
+# Node.js 依赖
+node_modules/
+
+# 日志文件
+/logs/*.log
+logs/
+
+# 上传文件目录（根据需要决定是否忽略）
+# /public/uploads/
+
+# 临时文件
+*.tmp
+*.temp
+*.cache
+
+# 构建缓存
+.npm
+.yarn
+logs/

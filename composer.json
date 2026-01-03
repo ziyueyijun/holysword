@@ -1,0 +1,46 @@
+{
+    "name": "holysword/holysword",
+    "description": "HolySword - A lightweight PHP API framework",
+    "homepage": "https://github.com/ziyueyijun/holysword",
+    "type": "framework",
+    "license": "MIT",
+    "keywords": ["php", "framework", "mvc", "lightweight", "holysword"],
+    "authors": [
+        {
+            "name": "ziyueyijun",
+            "homepage": "https://github.com/ziyueyijun/holysword"
+        }
+    ],
+    "require": {
+        "php": ">=8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "HolySword\\": "src/",
+            "App\\": "app/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
