@@ -30,4 +30,7 @@ logs/
 # 构建缓存
 .npm
 .yarn
-logs/
+
+# public 目录（只提交 index.php）
+/public/*
+!/public/index.php
